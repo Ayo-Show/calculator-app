@@ -6,9 +6,16 @@ const calculator = {
 };
 
 function inputDigit(digit) {
-  const { displayValue } = calculator;
-  // Overwrite `displayValue` if the current value is '0' otherwise append to it
-  calculator.displayValue = displayValue === '0' ? digit : displayValue + digit;
+  const { displayValue, waitingForSecondOperand } = calculator;
+
+  if (waitingForSecondOperand === true) {
+    calculator.displayValue = digit;
+    calculator.waitingForSecondOperand = false;
+  } else {
+    calculator.displayValue =
+      displayValue === "0" ? digit : displayValue + digit;
+  }
+
   console.log(calculator);
 }
 
@@ -20,10 +27,9 @@ function inputDecimal(dot) {
   }
 }
 
-
 function handleOperator(nextOperator) {
   // Destructure the properties on the calculator object
-  const { firstOperand, displayValue, operator } = calculator
+  const { firstOperand, displayValue, operator } = calculator;
   // `parseFloat` converts the string contents of `displayValue`
   // to a floating-point number
   const inputValue = parseFloat(displayValue);
@@ -33,14 +39,31 @@ function handleOperator(nextOperator) {
   if (firstOperand === null && !isNaN(inputValue)) {
     // Update the firstOperand property
     calculator.firstOperand = inputValue;
+  } else if (operator) {
+    const result = calculate(firstOperand, inputValue, operator);
+
+    calculator.displayValue = String(result);
+    calculator.firstOperand = result;
   }
 
   calculator.waitingForSecondOperand = true;
   calculator.operator = nextOperator;
   console.log(calculator);
+} 
+
+function calculate(firstOperand, secondOperand, operator) {
+  if (operator === "+") {
+    return firstOperand + secondOperand;
+  } else if (operator === "-") {
+    return firstOperand - secondOperand;
+  } else if (operator === "*") {
+    return firstOperand * secondOperand;
+  } else if (operator === "/") {
+    return firstOperand / secondOperand;
+  }
+
+  return secondOperand;
 }
-
-
 
 function updateDisplay() {
   const display = document.querySelector(".calculator-screen");
