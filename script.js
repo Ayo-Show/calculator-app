@@ -34,6 +34,12 @@ function handleOperator(nextOperator) {
   // to a floating-point number
   const inputValue = parseFloat(displayValue);
 
+  if (operator && calculator.waitingForSecondOperand) {
+    calculator.operator = nextOperator;
+    console.log(calculator);
+    return;
+  }
+
   // verify that `firstOperand` is null and that the `inputValue`
   // is not a `NaN` value
   if (firstOperand === null && !isNaN(inputValue)) {
@@ -49,7 +55,7 @@ function handleOperator(nextOperator) {
   calculator.waitingForSecondOperand = true;
   calculator.operator = nextOperator;
   console.log(calculator);
-} 
+}
 
 function calculate(firstOperand, secondOperand, operator) {
   if (operator === "+") {
@@ -63,6 +69,14 @@ function calculate(firstOperand, secondOperand, operator) {
   }
 
   return secondOperand;
+}
+
+function resetCalculator() {
+  calculator.displayValue = "0";
+  calculator.firstOperand = null;
+  calculator.waitingForSecondOperand = false;
+  calculator.operator = null;
+  console.log(calculator);
 }
 
 function updateDisplay() {
@@ -98,7 +112,8 @@ keys.addEventListener("click", (event) => {
   }
 
   if (target.classList.contains("all-clear")) {
-    console.log("clear", target.value);
+    resetCalculator();
+    updateDisplay();
     return;
   }
 
